@@ -1,0 +1,15 @@
+[package]
+name = "hsrn-sat-bin"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "hsrn-sat"
+path = "src/main.rs"
+
+[dependencies]
+hsrn-satellite-node = { path = "../../crates/satellite" }
+hsrn-common = { path = "../../crates/common" }
+tracing = { workspace = true }

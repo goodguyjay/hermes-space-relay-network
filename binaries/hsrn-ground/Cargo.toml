@@ -1,0 +1,15 @@
+[package]
+name = "hsrn-ground-bin"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "hsrn-ground"
+path = "src/main.rs"
+
+[dependencies]
+hsrn-ground-station = { path = "../../crates/ground" }
+hsrn-common = { path = "../../crates/common" }
+tracing = { workspace = true }

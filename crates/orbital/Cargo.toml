@@ -1,0 +1,16 @@
+[package]
+name = "hsrn-orbital"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hsrn-common = { path = "../common"}
+nalgebra = { workspace = true }
+serde = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+approx = "0.5" # for floating point comparisons in tests
