@@ -11,3 +11,6 @@ tracing-subscriber = { workspace = true }
 chrono = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+approx = "0.5" # for floating point comparisons in tests

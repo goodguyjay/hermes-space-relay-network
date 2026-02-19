@@ -1,4 +1,5 @@
 use crate::error::{HermesError, Result};
+use crate::julian_date::JulianDate;
 use chrono::{DateTime, Duration, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -7,17 +8,17 @@ use serde::{Deserialize, Serialize};
 /// Decouples simulated time from wall clock time to allow time acceleration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimulationTime {
-    /// Current simulated timestamp (UTC)
-    pub current: DateTime<Utc>,
+    /// Current simulation time
+    pub current: JulianDate,
     /// Simulation start time
-    pub epoch: DateTime<Utc>,
+    pub epoch: JulianDate,
     /// Time acceleration multiplier
     pub acceleration: TimeAcceleration,
 }
 
 impl SimulationTime {
     /// Create new simulation starting at given epoch.
-    pub fn new(epoch: DateTime<Utc>, acceleration: TimeAcceleration) -> Self {
+    pub fn new(epoch: JulianDate, acceleration: TimeAcceleration) -> Self {
         Self {
             current: epoch,
             epoch,
@@ -41,17 +42,18 @@ impl SimulationTime {
             .checked_mul(multiplier)
             .expect("Time acceleration will overflow with given wall duration.");
 
-        let sim_duration = Duration::nanoseconds(sim_nanos);
-
-        self.current = self
-            .current
-            .checked_add_signed(sim_duration)
-            .expect("Simulation time overflow.")
+        let sim_seconds = sim_nanos as f64 / 1_000_000_000.0;
+        self.current = self.current.add_seconds(sim_seconds);
     }
 
-    /// Get elapsed simulation time since epoch.
-    pub fn elapsed(&self) -> Duration {
-        self.current.signed_duration_since(self.epoch)
+    /// Get elapsed simulation time in seconds since epoch.
+    pub fn elapsed_seconds(&self) -> f64 {
+        self.current.elapsed_seconds_since(self.epoch)
+    }
+
+    /// Current time as UTC (for logging purposes only).
+    pub fn to_utc(&self) -> DateTime<Utc> {
+        self.current.to_utc()
     }
 }
 
@@ -101,5 +103,66 @@ impl TimeAcceleration {
         })?;
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use approx::assert_relative_eq;
+    use chrono::{Duration, Timelike};
+
+    #[test]
+    fn test_new_starts_at_epoch() {
+        let sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Realtime);
+        assert_eq!(sim.elapsed_seconds(), 0.0);
+    }
+
+    #[test]
+    fn test_realtime_advance() {
+        let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Realtime);
+        sim.advance(Duration::seconds(60));
+        assert_relative_eq!(sim.elapsed_seconds(), 60.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_fast_acceleration() {
+        let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Fast);
+        sim.advance(Duration::seconds(1));
+        // 1 wall second -> 100x = 100 sim seconds
+        assert_relative_eq!(sim.elapsed_seconds(), 100.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_ludicrous_acceleration() {
+        let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Ludicrous);
+        sim.advance(Duration::seconds(1));
+        // 1 wall second -> 10000x = 10000 sim seconds
+        assert_relative_eq!(sim.elapsed_seconds(), 10_000.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_27_minute_dtn_delay_at_ludicrous() {
+        let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Ludicrous);
+        let twenty_seven_minutes_sim = 27.0 * 60.0; // 27 minutes in seconds
+        let wall_seconds_needed = twenty_seven_minutes_sim / 10_000.0;
+        let wall_millis = (wall_seconds_needed * 1000.0) as i64;
+
+        sim.advance(Duration::milliseconds(wall_millis));
+
+        assert_relative_eq!(
+            sim.elapsed_seconds(),
+            twenty_seven_minutes_sim,
+            epsilon = 1.0 // within 1 second given millisecond wall resolution
+        )
+    }
+
+    #[test]
+    fn test_to_utc_advances_correctly() {
+        let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Realtime);
+        sim.advance(Duration::hours(1));
+        let utc = sim.to_utc();
+        // should be ~12:58:55 UTC
+        assert_eq!(utc.time().hour(), 12);
     }
 }

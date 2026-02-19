@@ -1,6 +1,6 @@
 //! Two-body orbital propagation using Keplerian elements.
 
-use crate::constants::sun;
+use hsrn_common::constants::sun;
 use crate::coordinates::{EciPosition, Vector3};
 use chrono::{DateTime, Duration, Utc};
 use hsrn_common::orbital_log;
@@ -338,7 +338,7 @@ mod tests {
     fn test_orbital_period() {
         // Earth orbit around Sun
         let elements = OrbitalElements {
-            semi_major_axis_km: crate::constants::AU_KM,
+            semi_major_axis_km: hsrn_common::constants::AU_KM,
             mu_km3_s2: sun::MU_KM3_PER_S2,
             ..Default::default()
         };
@@ -354,8 +354,8 @@ mod tests {
         use chrono::Duration;
 
         // Circular orbit around earth
-        let a = crate::constants::earth::RADIUS_EQUATORIAL_KM + 400.0; // LEO
-        let mu = crate::constants::earth::MU_KM3_PER_S2;
+        let a = hsrn_common::constants::earth::RADIUS_EQUATORIAL_KM + 400.0; // LEO
+        let mu = hsrn_common::constants::earth::MU_KM3_PER_S2;
         let v_circular = (mu / a).sqrt();
 
         let initial_state = OrbitalState::new(

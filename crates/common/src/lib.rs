@@ -12,7 +12,10 @@
 pub mod error;
 pub mod logging;
 pub mod time;
+pub mod julian_date;
+pub mod constants;
 
 pub use error::{HermesError, Result};
-pub use logging::{LogLevel, init_logging};
+pub use logging::{init_logging, LogLevel};
 pub use time::{SimulationTime, TimeAcceleration};
+pub use constants::*;

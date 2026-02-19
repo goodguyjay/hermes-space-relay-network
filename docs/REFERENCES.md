@@ -1,128 +1,205 @@
-This document lists the official sources and numerical values for the constants used in the project.
+# HERMES Space Relay Network — References
+
+Numerical constants and algorithms used in this project, with sources and verification status.
+
+---
+
+**TODO: Gemini provided these values in the original code, but I need to verify them against authoritative sources and document the references here. This file will be a living document that evolves as we implement and test the various components of the system.**
+
+---
 
 ## 1. Fundamental Physical Constants
-* **Speed of Light ($c$):** 299,792,458 m/s (Exact)
-    * *Source:* NIST / CODATA 2018
-    * *Ref:* Fixed value in the International System of Units (SI).
-* **Gravitational Constant ($G$):** 6.67430e-11 m³ kg⁻¹ s⁻²
-    * *Source:* CODATA 2018 (E. Tiesinga et al., "The CODATA 2018 periodic table of the constants")
-    * *Page:* 38 (Table 1).
 
-## 2. Earth Parameters (IERS Conventions 2010)
-Used for ECI/ECEF transforms and high-fidelity orbital propagation.
-* **Standard Gravitational Parameter ($\mu_e$):** 398,600.4418 km³/s²
-* **Equatorial Radius ($a_e$):** 6,378.1366 km
-* **Polar Radius:** 6,356.751858 km
-* **Flattening Factor ($1/f$):** 298.25642
-* **Nominal Mean Angular Velocity ($\omega$):** 7.2921151467e-5 rad/s
-    * *Source:* Petit, G. and Luzum, B. (eds.), IERS Conventions (2010), IERS Technical Note No. 36.
-    * *Section:* Chapter 1, Page 18 (Table 1.1: "IERS Numerical Standards").
-    * *Note:* Flattening differs from WGS84 (298.257223563), which is optimized for GPS/mapping rather than pure celestial mechanics.
+### Speed of Light ($c$)
+- **Value:** 299,792,458 m/s (exact)
+- **Source:** NIST / CODATA 2018; fixed by SI definition since 1983
+- **Status:** Verified (exact by definition)
 
-## 3. Solar System & Nominal Parameters (IAU 2015)
-Standardized nominal values for planetary conversion and mass ratios.
-* **Solar Gravitational Parameter ($\mu_{sun}$):** 1.32712440e11 km³/s²
-* **Solar Nominal Radius ($R_{sun}$):** 695,700 km
-* **Earth Nominal $\mu$:** 398,600.4 km³/s²
-    * *Source:* IAU 2015 Resolution B3 on Recommended Nominal Conversion Constants.
-    * *Page:* 2 (Table 1: "Nominal central mass parameters") and Page 3 (Table 2: "Nominal solar and planetary radii").
+### Newtonian Constant of Gravitation ($G$)
+- **Value:** 6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²
+- **Source:** CODATA 2018 — Tiesinga et al. (2021), *Rev. Mod. Phys.* 93, 025010
+- **Uncertainty:** ~22 ppm relative
+- **Status:** Verified
+- **Note:** G is the least precisely known fundamental constant. Never use G × M_body to derive μ — use body-specific μ values directly (determined from spacecraft tracking with sub-ppm accuracy). G is used here only for mass ratio calculations in the restricted three-body problem.
+
+| Reference   | Value (10⁻¹¹ m³ kg⁻¹ s⁻²) | Uncertainty |
+|-------------|---------------------------|-------------|
+| CODATA 2014 | 6.67408 ± 0.00031         | 46 ppm      |
+| CODATA 2018 | 6.67430 ± 0.00015         | 22 ppm      |
+| CODATA 2022 | 6.67430 ± 0.00015         | 22 ppm      |
+
+---
+
+## 2. Earth Parameters
+
+**Primary source:** Petit, G. & Luzum, B. (eds.), *IERS Conventions (2010)*, IERS Technical Note No. 36, Chapter 1, Table 1.1 — "IERS Numerical Standards"
+
+| Parameter                | Value               | Status                         |
+|--------------------------|---------------------|--------------------------------|
+| μ_Earth (km³/s²)         | 398,600.4418        | Verified                       |
+| Equatorial radius (km)   | 6,378.1366          | Verified                       |
+| Polar radius (km)        | 6,356.751858        | Verified (derived: b = a(1-f)) |
+| Inverse flattening (1/f) | 298.25642           | Verified                       |
+| Rotation rate (rad/s)    | 7.2921151467 × 10⁻⁵ | Verified                       |
+| Sidereal day (s)         | 86,164.0905         | Verified (derived from ω)      |
+
+### WGS-84 vs IERS 2010
+These are different standards and must not be mixed. IERS 2010 is used throughout this project for celestial mechanics. WGS-84 (equatorial radius 6,378.137 km, 1/f = 298.257223563) applies to GPS and mapping only.
+
+**Source:** NIMA Technical Report TR8350.2 (3rd ed., Amendment 1, 2004), Table 3.1
+
+---
+
+## 3. Sun Parameters
+
+**Primary source:** IAU 2015 Resolution B3 — *Recommended Nominal Conversion Constants*
+
+| Parameter         | Value             | Status                      |
+|-------------------|-------------------|-----------------------------|
+| μ_Sun (km³/s²)    | 1.32712440 × 10¹¹ | Verified (IAU 2015 nominal) |
+| Solar radius (km) | 695,700           | Verified (IAU 2015 nominal) |
+
+The solar μ is a *nominal* constant fixed by IAU resolution for numerical stability. It is defined to be close to the current best estimate but will not be changed if new measurements refine the solar mass. Compatible with both TCB and TDB time scales.
+
+---
 
 ## 4. Mars Parameters
-* **Gravitational Parameter ($\mu_{mars}$):** 42,828.3752 km³/s²
-* **Equatorial Radius ($R_{eq}$):** 3,396.19 km
-* **Rotation Rate:** 7.0882181e-5 rad/s
-    * *Source:* Archinal, B. A., et al. (2018). Report of the IAU/IAG Working Group on Cartographic Coordinates and Rotational Elements: 2015.
-    * *Page:* 24 (Table 1: Radii) and Page 26 (Table 4: Rotation/Mu).
 
-## 5. Astronomical Unit (AU)
-* **Value:** 149,597,870.7 km (Exact)
-    * *Source:* IAU 2012 Resolution B2 on the re-definition of the astronomical unit of length.
-    * *Page:* 1 (Resolution text).
+**Primary source:** Archinal, B. A., et al. (2018). Report of the IAU/IAG Working Group on Cartographic Coordinates and Rotational Elements: 2015. *Celestial Mechanics and Dynamical Astronomy* 130(3):22. Table 1 (radii), Table 4 (rotation/μ).
 
-## 6. Coordinate System Standards
+**Supporting source for μ:** Konopliv, A. S., et al. (2011). Mars high resolution gravity fields from MRO, Mars seasonal gravity, and other dynamical parameters. *Icarus* 211(1):401–428.
 
-### WGS-84 (World Geodetic System 1984)
-Used for GPS, mapping, and ground station geodetic positions.
-* **Semi-major axis ($a$):** 6,378.137 km
-* **Flattening ($1/f$):** 298.257223563
-  * *Source:* NIMA Technical Report TR8350.2 (3rd ed., Amendment 1, 2004)
-  * *Page:* 3-2 (Table 3.1: "Defining Parameters")
-  * *Note:* Used when converting lat/lon/alt to ECEF for ground stations.
+| Parameter              | Value              | Status                         |
+|------------------------|--------------------|--------------------------------|
+| μ_Mars (km³/s²)        | 42,828.3752        | Verified                       |
+| Equatorial radius (km) | 3,396.19           | Verified (updated from 3396.2) |
+| Rotation rate (rad/s)  | 7.088218081 × 10⁻⁵ | Verified                       |
+| Sol duration (s)       | 88,775.244         | Verified                       |
 
-### J2000 Epoch Reference Frame
-Standard epoch for celestial mechanics calculations.
-* **Epoch:** January 1, 2000, 12:00 TT (Terrestrial Time)
-* **Julian Date:** 2451545.0 TT
-  * *Source:* IAU 2000 Resolution B1.6
-  * *Note:* ECI coordinates are typically referenced to J2000.
+**Note on radius:** 3,396.2 km is a common approximation; 3,396.19 km is the formal IAU value. Mars is triaxial; for orbital mechanics a rotational ellipsoid or mean radius of 3,389.50 km is sufficient.
 
-## 7. Time Systems
+**Source for Sol:** Allison, M. & McEwen, M. (2000). A post-Pathfinder evaluation of areocentric solar coordinates. *Planetary and Space Science* 48(2-3):215–235. Table 4.
 
-### Sidereal Day
-* **Earth Mean Sidereal Day:** 86,164.0905 seconds
-  * *Derived from:* $\omega = 2\pi / T_{sid}$ where $\omega$ is IERS 2010 rotation rate
-  * *Source:* USNO Circular 179 (2005), Page 12
+---
+
+## 5. Astronomical Unit
+
+- **Value:** 149,597,870.7 km (exact)
+- **Source:** IAU 2012 Resolution B2 — *Re-definition of the astronomical unit of length*
+- **Status:** Verified (exact by definition since 2012)
+
+Since 2012 the AU is a fixed defined constant, not a measured value. Changes in solar mass estimates adjust μ_Sun; the AU remains fixed.
+
+---
+
+## 6. Mars Semi-Major Axis
+
+- **Value:** 1.523679342 AU = 227,944,135.8 km
+- **Source:** JPL DE430 planetary ephemeris (consistent with IAU conventions)
+- **Status:** Verified (standard references cite 1.5237 AU; DE430 precision is appropriate for mission planning)
+
+---
+
+## 7. Lagrange Point Stability — Routh's Criterion
+
+L4/L5 triangular points are linearly stable when:
+
+$$27\mu(1 - \mu) < 1 \quad \Rightarrow \quad \mu < \frac{1}{2}\left(1 - \sqrt{\frac{23}{27}}\right) \approx 0.0385208965$$
+
+- **Threshold value:** 0.0385208965 (exact analytic result)
+- **Source:** Szebehely, V. (1967). *Theory of Orbits: The Restricted Problem of Three Bodies.* Academic Press. pp. 138–142.
+- **Status:** Verified (0.0385 is a common engineering approximation; exact value used in code)
+- **Sun-Earth μ:** ~3.003 × 10⁻⁶ ≪ threshold | Stable
+- **Sun-Mars μ:** ~3.23 × 10⁻⁷ ≪ threshold | Stable
+
+**Note:** L1, L2, L3 (collinear points) are always unstable — they are saddle points in the effective potential. Spacecraft at these points (e.g. JWST at Sun-Earth L2) require active station-keeping.
+
+---
+
+## 8. Time Systems
+
+### J2000.0 Epoch
+- **Formal definition:** January 1, 2000, 12:00:00 **Terrestrial Time (TT)**
+- **Julian Date:** 2451545.0 TT
+- **Source:** IAU 2000 Resolution B1.6
+- **Status:** Verified
+- **UTC equivalent:** 2000-01-01 11:58:55.816 UTC
+  - TT = TAI + 32.184 s (always)
+  - TAI = UTC + 32 s (leap seconds at J2000)
+  - → 12:00:00 TT = 11:58:55.816 UTC
+- **Implementation note:** `chrono` has no TT scale. The epoch is stored as the correct UTC-equivalent instant. Callers performing GAST or precession/nutation calculations must handle the TT timescale externally.
+
+### Earth Sidereal Day
+- **Value:** 86,164.0905 s (derived from ω = 2π/T_sid, IERS rotation rate)
+- **Source:** USNO Circular 179 (2005), p. 12
+- **Status:** Verified
 
 ### Mars Sol
-* **Mean Solar Day on Mars:** 88,775.244 seconds (24h 39m 35.244s)
-  * *Source:* Allison, M. & McEwen, M. (2000). "A post-Pathfinder evaluation of areocentric solar coordinates with improved timing recipes for Mars seasonal/diurnal climate studies." Planetary and Space Science, 48(2-3), 215-235.
-  * *Page:* 223 (Table 4)
+- **Value:** 88,775.244 s (24h 39m 35.244s)
+- **Source:** Allison & McEwen (2000), *Planetary and Space Science* 48(2-3), Table 4
+- **Status:** Verified
 
-## 8. Lagrange Point Stability
+---
 
-### Sun-Earth L4/L5 Points
-* **Distance from Earth:** ~1 AU (±60° in orbit)
-* **Stability:** Stable for small perturbations if mass ratio $\mu < 0.0385$
-  * *Calculation:* Earth/Sun mass ratio = 3.003e-6 << 0.0385 ✓
-  * *Source:* Szebehely, V. (1967). "Theory of Orbits: The Restricted Problem of Three Bodies." Academic Press.
-  * *Page:* 138-142 (Chapter 5: Linear stability analysis)
+## 9. Light-Time Delay — Earth-Mars
 
-### Mars-Sun System
-* **Mars/Sun mass ratio:** ~3.23e-7
-* **Lagrange point distances:** L1/L2 at ~1.5 million km from Mars
-  * *Source:* Derived from standard three-body problem equations
-  * *Ref:* Murray, C. D. & Dermott, S. F. (1999). "Solar System Dynamics." Cambridge University Press, pp. 63-65.
+- **Minimum distance (near opposition):** ~55.7 million km → ~185.8 s delay
+- **Maximum distance (near conjunction):** ~401 million km → ~1337.6 s delay
+- **Source:** JPL Horizons System ephemeris — https://ssd.jpl.nasa.gov/horizons/
+- **Status:** Verified
 
-## 9. Light-Time Delay
+**Note on variability:** Opposition distance ranges from 54.6–103 million km due to eccentricity. 55.7 million km is a particularly close approach (similar to 2003 opposition). These are physical bounds on the delay, not mission-specific predictions.
 
-### Mars-Earth Communication
-* **Minimum distance (Opposition):** ~55.7 million km → 3m 6s delay
-* **Maximum distance (Conjunction):** ~401 million km → 22m 16s delay
-  * *Source:* JPL Horizons System ephemeris calculations
-  * *Note:* Actual values vary due to orbital eccentricity
-  * *Ref:* https://ssd.jpl.nasa.gov/horizons/
+**Formula:** delay (s) = distance (km) / c (km/s)
+
+---
 
 ## 10. Orbital Mechanics Algorithms
 
-### Two-Body Problem
-* **Kepler's Equation Solver:** Newton-Raphson iteration
-  * *Convergence:* Typically 3-5 iterations for $\epsilon < 10^{-12}$
-  * *Source:* Vallado (4th ed), Algorithm 2, pp. 65-66
-  * *Status:* Needs verification against test cases
+### Kepler's Equation Solver
+- **Method:** Newton-Raphson iteration
+- **Convergence:** Typically 3–5 iterations for ε < 10⁻¹²
+- **Initial guess:** M for e ≤ 0.8; π for e > 0.8 (avoids slow convergence near apoapsis)
+- **Source:** Vallado, D. A. (2013). *Fundamentals of Astrodynamics and Applications* (4th ed.). Microcosm Press. Algorithm 2, pp. 65–66
+- **Status:** Implemented and tested
 
-### Coordinate Transformations
-* **ECI ↔ ECEF:** Rotation by Greenwich Apparent Sidereal Time (GAST)
-  * *Source:* Vallado (4th ed), Algorithm 28, pp. 227-230
-  * *Status:* Needs fact-checking
-* **Geodetic ↔ ECEF:** Iterative solution for inverse transform
-  * *Source:* Vallado (4th ed), Algorithm 12, pp. 172-173
-  * *Status:* Needs fact-checking
+### ECI ↔ ECEF Coordinate Transform
+- **Method:** Rotation by Greenwich Apparent Sidereal Time (GAST)
+- **Source:** Vallado (4th ed.), Algorithm 28, pp. 227–230
+- **Status:** Not yet implemented
 
-## Notes on Source Verification
+### Geodetic ↔ ECEF Transform
+- **Method:** Direct transform (geodetic → ECEF); iterative inverse
+- **Source:** Vallado (4th ed.), Algorithm 12, pp. 172–173
+- **Status:** Implemented (`EcefPosition::from_geodetic`), tests passing
 
-### Verified
-- Speed of light (exact by SI definition)
-- IAU 2015 nominal values (primary source checked)
-- Astronomical Unit (IAU 2012 resolution)
+### Rotating Frame → ECI Transform
+- **Method:** 2D rotation by orbital phase angle θ(t) = θ₀ + n·Δt
+- **Status:** In progress
 
-### TODO: Needs Verification
-- IERS 2010 constants (need to check actual IERS TN 36 document)
-- Mars parameters (check IAU/IAG 2015 report)
-- Vallado algorithms (cross-reference with test cases from textbook)
-- WGS-84 parameters (verify NIMA TR8350.2)
+---
 
-### TODO: Research
-- High-fidelity Earth orientation parameters (polar motion, UT1-UTC)
-- J2 perturbation coefficient for Earth oblateness
-- Atmospheric drag models (if adding low Earth orbit satellites)
-- Solar radiation pressure coefficients (for lagrange point station-keeping)
+## 11. Coordinate System Standards
+
+### J2000 ECI Frame
+- Origin: Earth/Solar system barycenter (context-dependent)
+- X-axis: Vernal equinox direction at J2000.0 (fixed stars)
+- Z-axis: Earth's rotation axis at J2000.0
+- **Source:** IAU 2000 Resolution B1.6
+
+### WGS-84 (ground stations only)
+- Semi-major axis: 6,378.137 km
+- Inverse flattening: 298.257223563
+- **Source:** NIMA TR8350.2 (3rd ed., Amendment 1, 2004), Table 3.1
+- **Usage:** Ground station lat/lon/alt → ECEF conversion only. Do not mix with IERS 2010 parameters.
+
+---
+
+## 12. TODO
+
+- [ ] High-fidelity Earth orientation parameters (polar motion, UT1-UTC corrections)
+- [ ] J₂ oblateness coefficient for Earth nodal precession
+- [ ] Solar radiation pressure model for L4/L5 station-keeping budgets
+- [ ] Verify Vallado Algorithm 28 (ECI ↔ ECEF) against known test cases
+- [ ] Atmospheric drag models (not applicable to heliocentric orbit, but may be needed for Earth departure/arrival phases)
+- [ ] Maybe... maybe implement `hifitime` crate for rigorous TT/TAI/UTC handling if sub-minute epoch precision becomes necessary

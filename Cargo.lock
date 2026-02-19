@@ -193,6 +193,7 @@ version = "0.1.0"
 name = "hsrn-common"
 version = "0.1.0"
 dependencies = [
+ "approx",
  "chrono",
  "serde",
  "thiserror",

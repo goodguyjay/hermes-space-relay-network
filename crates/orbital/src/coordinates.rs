@@ -2,6 +2,7 @@
 
 use nalgebra::Vector3 as NalVector3;
 use serde::{Deserialize, Serialize};
+use hsrn_common::constants::{earth};
 
 /// 3D vector (generic, units specified by context).
 pub type Vector3 = NalVector3<f64>;
@@ -62,7 +63,7 @@ impl EcefPosition {
     /// # References
     /// Vallado (4th ed), Algorithm 12, pp. 172-173 (needs fact checking)
     pub fn from_geodetic(lat_deg: f64, lon_deg: f64, alt_km: f64) -> Self {
-        use crate::constants::{DEG_TO_RAD, earth};
+        use hsrn_common::constants::{DEG_TO_RAD, earth};
 
         let lat_rad = lat_deg * DEG_TO_RAD;
         let lon_rad = lon_deg * DEG_TO_RAD;
@@ -101,7 +102,7 @@ mod tests {
         // Should be at Earth's equatorial radius along X-axis
         assert_relative_eq!(
             ecef.position_km.x,
-            crate::constants::earth::RADIUS_EQUATORIAL_KM,
+            earth::RADIUS_EQUATORIAL_KM,
             epsilon = 1e-6
         );
         assert_relative_eq!(ecef.position_km.y, 0.0, epsilon = 1e-6);
@@ -118,7 +119,7 @@ mod tests {
         assert_relative_eq!(ecef.position_km.y, 0.0, epsilon = 1e-6);
         assert_relative_eq!(
             ecef.position_km.z,
-            crate::constants::earth::RADIUS_POLAR_KM,
+            earth::RADIUS_POLAR_KM,
             epsilon = 1e-6
         );
     }
