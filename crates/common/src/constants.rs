@@ -153,10 +153,6 @@ pub mod sun {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Astronomical unit (km). Exact by IAU 2012 Resolution B2.
-///
-/// Fixed as exactly 149,597,870,700 m = 149,597,870.7 km.
-/// This is a defined constant, not a measured value. If solar mass estimates
-/// change, μ_sun is updated, the AU remains fixed.
 pub const AU_KM: f64 = 149_597_870.7;
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@
 use hsrn_common::constants::{earth, mars, sun, AU_KM, ROUTH_STABILITY_THRESHOLD};
 use crate::coordinates::Vector3;
 use serde::{Deserialize, Serialize};
+use hsrn_common::julian_date::JulianDate;
 
 /// Lagrange point designation
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -149,6 +150,11 @@ impl ThreeBodySystem {
     /// Stable if mass ratio μ < Routh's criterion
     pub fn triangular_points_stable(&self) -> bool {
         self.mass_ratio() < ROUTH_STABILITY_THRESHOLD
+    }
+    
+    pub fn lagrange_position_eci(&self, point: LagrangePoint, time: JulianDate) -> Vector3 {
+        let rotating = self.lagrange_position(point);
+        crate::coordinates::rotating_to_eci(rotating, time)
     }
 }
 
