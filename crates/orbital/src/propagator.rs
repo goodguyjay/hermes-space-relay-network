@@ -1,8 +1,8 @@
 //! Two-body orbital propagation using Keplerian elements.
 
-use hsrn_common::constants::sun;
 use crate::coordinates::{EciPosition, Vector3};
-use chrono::{DateTime, Duration, Utc};
+use hsrn_common::constants::sun;
+use hsrn_common::julian_date::JulianDate;
 use hsrn_common::orbital_log;
 use serde::{Deserialize, Serialize};
 
@@ -24,7 +24,7 @@ pub struct OrbitalElements {
     /// True anomaly at epoch (radians) true_anomaly_rad: f64,
     pub true_anomaly_rad: f64,
     /// Epoch time (reference time for the orbital elements)
-    pub epoch: DateTime<Utc>,
+    pub epoch: JulianDate,
     /// Gravitational parameter of central body (km³/s²)
     /// Default: Sun
     pub mu_km3_s2: f64,
@@ -39,7 +39,7 @@ impl Default for OrbitalElements {
             raan_rad: 0.0,
             argument_of_periapsis_rad: 0.0,
             true_anomaly_rad: 0.0,
-            epoch: Utc::now(),
+            epoch: JulianDate::J2000,
             mu_km3_s2: sun::MU_KM3_PER_S2,
         }
     }
@@ -120,8 +120,8 @@ impl OrbitalElements {
     ///
     /// # Returns
     /// New orbital elements at target_time with updated true anomaly.
-    pub fn propagate_to(&self, target_time: DateTime<Utc>) -> Self {
-        let dt_seconds = (target_time - self.epoch).num_seconds() as f64;
+    pub fn propagate_to(&self, target_time: JulianDate) -> Self {
+        let dt_seconds = target_time.elapsed_seconds_since(self.epoch);
 
         // Mean motion: n = √(μ/a³)
         let n = (self.mu_km3_s2 / self.semi_major_axis_km.powi(3)).sqrt();
@@ -154,21 +154,21 @@ impl OrbitalElements {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct OrbitalState {
     pub position: EciPosition,
-    pub time: DateTime<Utc>,
+    pub time: JulianDate,
 }
 
 impl OrbitalState {
-    pub fn new(position: EciPosition, time: DateTime<Utc>) -> Self {
+    pub fn new(position: EciPosition, time: JulianDate) -> Self {
         Self { position, time }
     }
 
     /// Propagate state forward using RK4 integration.
     ///
     /// # Arguments
-    /// - `dt`: Time step duration
+    /// - `dt`: Time step duration (seconds)
     /// - `mu_km3_per_s2`: Gravitational parameter of central body
-    pub fn propagate(&self, dt: Duration, mu_km3_per_s2: f64) -> Self {
-        let h = dt.num_seconds() as f64;
+    pub fn propagate(&self, dt_seconds: f64, mu_km3_per_s2: f64) -> Self {
+        let h = dt_seconds;
 
         let r0 = self.position.position_km;
         let v0 = self.position.velocity_km_per_s;
@@ -202,7 +202,7 @@ impl OrbitalState {
 
         Self {
             position: EciPosition::new(new_position, new_velocity),
-            time: self.time + dt,
+            time: self.time.add_seconds(dt_seconds),
         }
     }
 }
@@ -351,8 +351,6 @@ mod tests {
 
     #[test]
     fn test_rk4_energy_conservation() {
-        use chrono::Duration;
-
         // Circular orbit around earth
         let a = hsrn_common::constants::earth::RADIUS_EQUATORIAL_KM + 400.0; // LEO
         let mu = hsrn_common::constants::earth::MU_KM3_PER_S2;
@@ -363,19 +361,18 @@ mod tests {
                 Vector3::new(a, 0.0, 0.0),
                 Vector3::new(0.0, v_circular, 0.0),
             ),
-            Utc::now(),
+            JulianDate::J2000,
         );
 
         let initial_energy = orbital_energy(&initial_state, mu);
 
         // Propagate for one orbit (90 minute timesteps)
         let mut state = initial_state;
-        let timestep = Duration::minutes(1);
         let orbital_period_minutes = 90;
 
         for _ in 0..(orbital_period_minutes * 7) {
             // one week
-            state = state.propagate(timestep, mu);
+            state = state.propagate(60.0, mu);
         }
 
         let final_energy = orbital_energy(&state, mu);

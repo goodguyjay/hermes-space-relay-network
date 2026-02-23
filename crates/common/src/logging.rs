@@ -29,7 +29,7 @@ pub fn init_logging(level: LogLevel) {
 /// Mission control logging macro.
 ///
 /// # Example
-/// ```
+/// ```text
 /// mission_log!(info, satellite = "HSRN-1", event = "ORBIT_INSERTION", "main engine cutoff");
 /// ```
 #[macro_export]

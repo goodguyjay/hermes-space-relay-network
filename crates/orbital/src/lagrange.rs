@@ -1,6 +1,6 @@
 //! Lagrange point calculations for three-body systems.
 
-use hsrn_common::constants::{earth, mars, sun, AU_KM};
+use hsrn_common::constants::{earth, mars, sun, AU_KM, ROUTH_STABILITY_THRESHOLD};
 use crate::coordinates::Vector3;
 use serde::{Deserialize, Serialize};
 
@@ -33,8 +33,8 @@ pub struct ThreeBodySystem {
 impl ThreeBodySystem {
     /// Sun-Earth system
     pub fn sun_earth() -> Self {
-        let m_sun = sun::MU_KM3_PER_S2 / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9; // kg
-        let m_earth = earth::MU_KM3_PER_S2 / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9; // kg
+        let m_sun = sun::MASS_KG / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9; // kg
+        let m_earth = earth::MASS_KG / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9; // kg
 
         Self {
             m1: m_sun,
@@ -45,13 +45,13 @@ impl ThreeBodySystem {
 
     /// Sun-Mars system
     pub fn sun_mars() -> Self {
-        let m_sun = sun::MU_KM3_PER_S2 / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9;
-        let m_mars = mars::MU_KM3_PER_S2 / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9;
+        let m_sun = sun::MASS_KG / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9;
+        let m_mars = mars::MASS_KG / hsrn_common::constants::GRAVITATIONAL_CONSTANT * 1e9;
 
         Self {
             m1: m_sun,
             m2: m_mars,
-            separation_km: 1.524 * AU_KM, // Mars semi-major axis
+            separation_km: mars::SEMI_MAJOR_AXIS_KM * AU_KM, // Mars semi-major axis
         }
     }
 
@@ -146,9 +146,9 @@ impl ThreeBodySystem {
 
     /// Check if L4/L5 are linearly stable.
     ///
-    /// Stable if mass ratio μ < 0.0385 (Routh's criterion)
+    /// Stable if mass ratio μ < Routh's criterion
     pub fn triangular_points_stable(&self) -> bool {
-        self.mass_ratio() < 0.0385
+        self.mass_ratio() < ROUTH_STABILITY_THRESHOLD
     }
 }
 

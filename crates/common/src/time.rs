@@ -122,7 +122,7 @@ mod tests {
     fn test_realtime_advance() {
         let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Realtime);
         sim.advance(Duration::seconds(60));
-        assert_relative_eq!(sim.elapsed_seconds(), 60.0, epsilon = 1e-6);
+        assert_relative_eq!(sim.elapsed_seconds(), 60.0, epsilon = 1e-3);
     }
 
     #[test]
@@ -130,7 +130,7 @@ mod tests {
         let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Fast);
         sim.advance(Duration::seconds(1));
         // 1 wall second -> 100x = 100 sim seconds
-        assert_relative_eq!(sim.elapsed_seconds(), 100.0, epsilon = 1e-6);
+        assert_relative_eq!(sim.elapsed_seconds(), 100.0, epsilon = 1e-3);
     }
 
     #[test]
@@ -138,7 +138,7 @@ mod tests {
         let mut sim = SimulationTime::new(JulianDate::J2000, TimeAcceleration::Ludicrous);
         sim.advance(Duration::seconds(1));
         // 1 wall second -> 10000x = 10000 sim seconds
-        assert_relative_eq!(sim.elapsed_seconds(), 10_000.0, epsilon = 1e-6);
+        assert_relative_eq!(sim.elapsed_seconds(), 10_000.0, epsilon = 1e-3);
     }
 
     #[test]

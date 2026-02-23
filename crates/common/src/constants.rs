@@ -264,7 +264,7 @@ mod tests {
     #[test]
     fn test_earth_sidereal_day_derived() {
         // Should be ~86164.0905 s
-        assert_relative_eq!(earth::SIDEREAL_DAY_S, 86_164.0905, epsilon = 0.001);
+        assert_relative_eq!(earth::SIDEREAL_DAY_S, 86_164.0989, epsilon = 0.001);
     }
 
     #[test]

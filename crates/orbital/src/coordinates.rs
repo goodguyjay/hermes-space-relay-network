@@ -1,8 +1,8 @@
 //! Coordinate system representation and transformations.
 
+use hsrn_common::constants::{earth, DEG_TO_RAD};
 use nalgebra::Vector3 as NalVector3;
 use serde::{Deserialize, Serialize};
-use hsrn_common::constants::{earth};
 
 /// 3D vector (generic, units specified by context).
 pub type Vector3 = NalVector3<f64>;
@@ -63,8 +63,6 @@ impl EcefPosition {
     /// # References
     /// Vallado (4th ed), Algorithm 12, pp. 172-173 (needs fact checking)
     pub fn from_geodetic(lat_deg: f64, lon_deg: f64, alt_km: f64) -> Self {
-        use hsrn_common::constants::{DEG_TO_RAD, earth};
-
         let lat_rad = lat_deg * DEG_TO_RAD;
         let lon_rad = lon_deg * DEG_TO_RAD;
 

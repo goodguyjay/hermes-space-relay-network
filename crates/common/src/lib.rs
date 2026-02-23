@@ -1,12 +1,12 @@
 //! HERMES SPACE RELAY NETWORK - COMMON SUBSYSTEMS
-//!
+//!```text
 //!        ___---___
 //!    ___/         \___
 //!   /               \
 //!  |   Mission Core  |
 //!   \___         ___/
 //!       ---___---
-//!
+//!```
 //! Shared types, logging infrastructure, and utilities.
 
 pub mod error;
