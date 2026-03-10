@@ -132,7 +132,7 @@ impl OrbitalElements {
 
         // Propagate mean anomaly
         let mut m = m0 + n * dt_seconds;
-        m %= 2.0 * std::f64::consts::PI;
+        m %= std::f64::consts::TAU;
         if m < 0.0 {
             m += std::f64::consts::TAU
         }

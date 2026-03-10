@@ -10,9 +10,11 @@
 //! - **ECEF (Earth-Centered Earth-Fixed)**: Origin at Earth center, rotates with Earth.
 //!   Used for ground station positions (lat/lon conversion).
 
-mod coordinates;
+pub mod coordinates;
 pub mod propagator;
 pub mod lagrange;
+pub mod visibility;
+mod contact;
 
 pub use hsrn_common::constants::*;
 pub use coordinates::{EcefPosition, EciPosition, Vector3};

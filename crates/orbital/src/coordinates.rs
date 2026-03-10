@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 pub type Vector3 = NalVector3<f64>;
 
 /// Earth's ecliptic longitude at J2000 (radians).
-/// (todo) fact check this.
 const EARTH_LONGITUDE_J2000_RAD: f64 = 100.46 * DEG_TO_RAD;
 
 /// Compute Earth's orbital phase angle at a given time.

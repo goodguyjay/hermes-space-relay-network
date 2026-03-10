@@ -37,8 +37,13 @@ impl JulianDate {
     }
 
     /// Advance by seconds
+    ///
     /// # Returns
     /// **New** `JulianDate` advanced by given seconds.
+    /// 
+    /// # Note
+    /// Precision degrades slightly for large values due to seconds->days->seconds roundtrip.
+    /// The fix is storing a separate sub-day remainder field when hifitime is implemented
     pub fn add_seconds(&self, seconds: f64) -> Self {
         Self(self.0 + seconds / SECONDS_PER_DAY)
     }

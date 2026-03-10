@@ -54,7 +54,7 @@ pub mod earth {
     ///
     /// Unit conversion: μ is in km³/s², G is in m³/(kg·s²).
     /// Multiply μ by 1e9 to convert km³ → m³ before dividing by G.
-    pub const MASS_KG: f64 = MU_KM3_PER_S2 * 1e9 / super::GRAVITATIONAL_CONSTANT;
+    pub const MASS_KG: f64 = MU_KM3_PER_S2 * 1e9 / super::GRAVITATIONAL_CONSTANT;   
 
     /// Equatorial radius (km). Source: IERS 2010, Table 1.1.
     pub const RADIUS_EQUATORIAL_KM: f64 = 6_378.1366;
