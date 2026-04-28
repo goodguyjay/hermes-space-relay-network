@@ -184,11 +184,11 @@ mod tests {
     struct SimpleEphemeris;
 
     impl EphemerisProvider for SimpleEphemeris {
-        fn sun_position_eci(&self, time: JulianDate) -> Vector3 {
+        fn sun_position_eci(&self, _time: JulianDate) -> Vector3 {
             Vector3::new(-AU_KM, 0.0, 0.0)
         }
 
-        fn mars_position_eci(&self, time: JulianDate) -> Vector3 {
+        fn mars_position_eci(&self, _time: JulianDate) -> Vector3 {
             Vector3::new(mars::SEMI_MAJOR_AXIS_KM, 0.0, 0.0)
         }
     }

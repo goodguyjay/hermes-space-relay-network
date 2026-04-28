@@ -17,15 +17,12 @@
 /// Speed of light in vacuum (m/s).
 ///
 /// Exact by SI definition since 1983.
-/// Source: NIST / CODATA 2018
 pub const LIGHT_SPEED_M_PER_S: f64 = 299_792_458.0;
 
 /// Speed of light in vacuum (km/s).
 pub const LIGHT_SPEED_KM_PER_S: f64 = LIGHT_SPEED_M_PER_S / 1000.0;
 
 /// Newtonian constant of gravitation (m³ kg⁻¹ s⁻²).
-///
-/// Source: CODATA 2018. Relative uncertainty: ~22 ppm.
 ///
 /// # Warning
 /// Do NOT use G to derive gravitational parameters (μ) for specific bodies.
@@ -40,14 +37,11 @@ pub const GRAVITATIONAL_CONSTANT: f64 = 6.674_30e-11;
 
 /// Earth parameters from IERS Conventions 2010.
 ///
-/// Source: Petit, G. & Luzum, B. (eds.), IERS Technical Note No. 36, Ch. 1, Table 1.1.
-///
 /// # Note on WGS-84 vs IERS 2010
 /// These values differ slightly from WGS-84 (used in GPS/mapping).
 /// IERS 2010 is optimized for celestial mechanics; WGS-84 for global positioning.
 pub mod earth {
     /// Standard gravitational parameter μ = GM (km³/s²).
-    /// Source: IERS Conventions 2010, Table 1.1.
     pub const MU_KM3_PER_S2: f64 = 398_600.4418;
 
     /// Earth mass (kg), derived from μ/G.
@@ -56,14 +50,14 @@ pub mod earth {
     /// Multiply μ by 1e9 to convert km³ → m³ before dividing by G.
     pub const MASS_KG: f64 = MU_KM3_PER_S2 * 1e9 / super::GRAVITATIONAL_CONSTANT;   
 
-    /// Equatorial radius (km). Source: IERS 2010, Table 1.1.
+    /// Equatorial radius (km).
     pub const RADIUS_EQUATORIAL_KM: f64 = 6_378.1366;
 
     /// Polar radius (km). Derived: b = a(1 - f).
     /// Verified consistent with IERS 2010 equatorial radius and flattening.
     pub const RADIUS_POLAR_KM: f64 = 6_356.751858;
 
-    /// Inverse flattening (1/f). Source: IERS 2010, Table 1.1.
+    /// Inverse flattening (1/f).
     pub const INVERSE_FLATTENING: f64 = 298.25642;
 
     /// Flattening factor f = 1/(1/f).
@@ -71,7 +65,6 @@ pub mod earth {
 
     /// Nominal mean angular velocity (rad/s).
     /// Corresponds to a mean sidereal day of 86,164.0905 s.
-    /// Source: IERS 2010, Table 1.1.
     pub const ROTATION_RATE_RAD_PER_S: f64 = 7.292_115_146_7e-5;
 
     /// Mean sidereal day (s). Derived from rotation rate: T = 2π/ω.
@@ -93,33 +86,27 @@ pub mod earth {
 // Mars Parameters
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Mars parameters from IAU/IAG Working Group on Cartographic Coordinates
-/// and Rotational Elements (WGCCRE 2015), Archinal et al. (2018).
+/// Mars parameters from IAU/IAG Working Group on Cartographic Coordinates and Rotational Elements
 pub mod mars {
     /// Standard gravitational parameter μ = GM (km³/s²).
     /// Includes mass of planet + Phobos + Deimos.
-    /// Source: Archinal et al. (2018), Table 4 (via Konopliv et al. 2011).
     pub const MU_KM3_PER_S2: f64 = 42_828.3752;
 
     /// Mars mass (kg), derived from μ/G.
     pub const MASS_KG: f64 = MU_KM3_PER_S2 * 1e9 / super::GRAVITATIONAL_CONSTANT;
 
     /// Equatorial radius (km).
-    /// Source: Archinal et al. (2018), Table 1.
     /// Note: 3396.2 is a common engineering approximation; 3396.19 is the formal value.
     pub const RADIUS_EQUATORIAL_KM: f64 = 3_396.19;
 
     /// Mars rotation rate (rad/s).
     /// Corresponds to a mean solar day (Sol) of 88,775.244 s.
-    /// Source: Archinal et al. (2018), Table 4.
     pub const ROTATION_RATE_RAD_PER_S: f64 = 7.088_218_081e-5;
 
     /// Mean solar day on Mars (Sol) in seconds: 24h 39m 35.244s.
-    /// Source: Allison & McEwen (2000), Table 4.
     pub const SOL_S: f64 = 88_775.244;
 
     /// Semi-major axis of Mars's heliocentric orbit (km).
-    /// Source: JPL DE430 ephemeris (consistent with IAU).
     pub const SEMI_MAJOR_AXIS_KM: f64 = 1.523_679_342 * super::AU_KM;
 
     /// Mars sidereal orbital period (s). 686.971 Earth days.

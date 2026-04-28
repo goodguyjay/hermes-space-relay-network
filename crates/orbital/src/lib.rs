@@ -15,6 +15,7 @@ pub mod propagator;
 pub mod lagrange;
 pub mod visibility;
 mod contact;
+pub mod ephemeris;
 
 pub use hsrn_common::constants::*;
 pub use coordinates::{EcefPosition, EciPosition, Vector3};
